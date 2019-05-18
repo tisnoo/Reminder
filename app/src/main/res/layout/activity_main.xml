@@ -19,7 +19,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="18dp"
         android:layout_marginRight="18dp"
-        android:onClick="newCard"
+        android:onClick="initNewCard"
         app:cardBackgroundColor="@color/design_default_color_primary"
         app:cardCornerRadius="4dp"
         app:layout_constraintEnd_toEndOf="parent"
