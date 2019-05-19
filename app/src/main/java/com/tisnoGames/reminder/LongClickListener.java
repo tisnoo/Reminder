@@ -7,26 +7,35 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class LongClickListener implements View.OnLongClickListener, View.OnClickListener {
     final private CardView cardView;
     final private TextView textView;
+    final private ImageView deleteButton;
     private Context context;
     private boolean isSelected = false;
     private static  boolean editable = true;
     private int differenceInHeight;
 
-    public LongClickListener(CardView cardView, TextView textView, Context context)
+    public LongClickListener(Card card, Context context)
     {
-        this.cardView   = cardView;
-        this.textView   = textView;
-        this.context    = context;
+        this.deleteButton   = card.getDeleteButton();
+        this.cardView       = card.getTemp();
+        this.textView       = card.getCardText();
+        this.context        = context;
     }
+
+
 
     @Override
     public void onClick(View v)
     {
+        //Set the deletbutton in-active
+        deleteButton.setVisibility(View.INVISIBLE);
+        deleteButton.setEnabled(false);
+
         //Only if the card is selected the selection can be reversed
         if (isSelected)
         {
@@ -49,7 +58,7 @@ public class LongClickListener implements View.OnLongClickListener, View.OnClick
                     .setView(userinput)
                     .setPositiveButton("Update", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // When user clicks on create button, create new Card with the right text.
+                            // When user clicks on create button, create new com.tisnoGames.reminder.Card with the right text.
                             if (!(userinput.getText().toString().trim().isEmpty())) {
                                 textView.setText(userinput.getText().toString());
 
@@ -95,6 +104,10 @@ public class LongClickListener implements View.OnLongClickListener, View.OnClick
 
     public boolean onLongClick(View v)
     {
+        //Set the deletbutton active
+        deleteButton.setVisibility(View.VISIBLE);
+        deleteButton.setEnabled(true);
+
         MainActivity.onLongClick(v);
         MainActivity.cardHighlighted = true;
         isSelected = true;

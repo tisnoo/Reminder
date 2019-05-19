@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity  {
                 .setView(userinput)
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // When user clicks on create button, create new Card with the right text.
+                        // When user clicks on create button, create new com.tisnoGames.reminder.Card with the right text.
                         if (!(userinput.getText().toString().trim().isEmpty())) {
                             newCard(userinput.getText().toString());
                         }
@@ -101,88 +101,7 @@ public class MainActivity extends AppCompatActivity  {
     //Create a new card with a reminder on it.
     public void newCard(String text)
     {
-        //Setting up the width for the card
-        int cardWidth = 1020;
-
-        final ConstraintLayout layout = MainActivity.layout;
-        //Setting up the text to be inserted into the card
-        final TextView cardText = new TextView(this);
-        //Setting up the delete button to be inserted into the card later
-        final ImageView deleteButton = new ImageView(this);
-
-        //Creating a new cardview
-        final CardView temp = new CardView(this);
-
-        //Setting properties for the text on the card
-        cardText.setText(text);
-        cardText.setY(30);
-        cardText.setX(30);
-
-        //Settin properties for the deletebutton
-        deleteButton.setImageResource(R.mipmap.delete);
-
-
-
-        //Setting properties for the new card
-        temp.setPreventCornerOverlap(false);
-        temp.setCardBackgroundColor(Color.WHITE);
-        temp.setMinimumWidth(cardWidth);
-        cardText.setMaxWidth(cardWidth-300);
-
-        //Adding the text to the card.
-        temp.addView(cardText);
-        temp.addView(deleteButton);
-        cardText.getLineCount();
-        temp.setCardElevation(10f);
-        temp.setY(10f);
-        temp.setX(30f);
-        temp.setAlpha(0f);
-
-        //Set x and y for deletebutton
-        deleteButton.setX(cardWidth-65);
-        deleteButton.setY(15);
-        deleteButton.getLayoutParams().width = 50;
-        deleteButton.getLayoutParams().height= 50;
-
-        //Add a clicklistener to the deletebutton
-        deleteButton.setOnClickListener(new deleteListener(temp));
-
-
-        //Add Card to The Layout (inside of the scrollView)
-        layout.addView(temp);
-
-        //Create a new clicklistener
-        LongClickListener cl = new LongClickListener(temp, cardText,this);
-
-
-        //Add the onClickListeners to the card
-        temp.setOnLongClickListener(cl);
-        temp.setOnClickListener(cl);
-
-        //Add a ongloballayoutlistener so that the height of the text can be caught
-        temp.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener(){
-
-                    @Override
-                    public void onGlobalLayout() {
-                        // gets called after layout has been done but before display
-                        // so we can get the height then hide the view
-                        temp.setMinimumHeight(cardText.getHeight()+60);
-
-                        //Add height to the navigation so that the user cant scroll lower than the cards, but all the cards are still visible
-                        layoutHeight += temp.getMinimumHeight()+40;
-                        layout.setMinHeight(layoutHeight);
-
-                        cardText.getViewTreeObserver().removeGlobalOnLayoutListener( this );
-
-                        //Move the cards before adding the newly made card to the cardArraylist so that the card doesnt move down
-                        moveCards(temp,temp.getHeight() +80);
-
-                        //Add the card to the card Arraylist
-                        allCards.add(temp);
-                    }
-
-                });
+        Card card = new Card(this,text);
     }
 
     //Move the cards down so the new card is above everything else.
