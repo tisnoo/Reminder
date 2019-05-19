@@ -7,22 +7,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.text.Layout;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  {
@@ -31,7 +25,7 @@ public class MainActivity extends AppCompatActivity  {
     private TextView mTextMessage;
     public static ConstraintLayout layout;
     public static ArrayList<CardView> allCards = new ArrayList<>();
-    private int layoutHeight = 30;
+    public static int layoutHeight = 30;
     public static boolean cardHighlighted = false;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -60,9 +54,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTextMessage = (TextView) findViewById(R.id.message);
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-
         layout = (ConstraintLayout) findViewById(R.id.ScrollLayout);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
@@ -93,7 +85,6 @@ public class MainActivity extends AppCompatActivity  {
                 .setNegativeButton("close", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
-
                     }
                 });
         builder.show();
@@ -110,10 +101,14 @@ public class MainActivity extends AppCompatActivity  {
     //Create a new card with a reminder on it.
     public void newCard(String text)
     {
+        //Setting up the width for the card
+        int cardWidth = 1020;
 
         final ConstraintLayout layout = MainActivity.layout;
         //Setting up the text to be inserted into the card
         final TextView cardText = new TextView(this);
+        //Setting up the delete button to be inserted into the card later
+        final ImageView deleteButton = new ImageView(this);
 
         //Creating a new cardview
         final CardView temp = new CardView(this);
@@ -123,18 +118,34 @@ public class MainActivity extends AppCompatActivity  {
         cardText.setY(30);
         cardText.setX(30);
 
+        //Settin properties for the deletebutton
+        deleteButton.setImageResource(R.mipmap.delete);
+
+
+
         //Setting properties for the new card
+        temp.setPreventCornerOverlap(false);
         temp.setCardBackgroundColor(Color.WHITE);
-        temp.setMinimumWidth(1020);
-        cardText.setWidth(temp.getMinimumWidth()-30);
+        temp.setMinimumWidth(cardWidth);
+        cardText.setMaxWidth(cardWidth-300);
 
         //Adding the text to the card.
         temp.addView(cardText);
+        temp.addView(deleteButton);
         cardText.getLineCount();
         temp.setCardElevation(10f);
         temp.setY(10f);
         temp.setX(30f);
         temp.setAlpha(0f);
+
+        //Set x and y for deletebutton
+        deleteButton.setX(cardWidth-65);
+        deleteButton.setY(15);
+        deleteButton.getLayoutParams().width = 50;
+        deleteButton.getLayoutParams().height= 50;
+
+        //Add a clicklistener to the deletebutton
+        deleteButton.setOnClickListener(new deleteListener(temp));
 
 
         //Add Card to The Layout (inside of the scrollView)
@@ -165,7 +176,7 @@ public class MainActivity extends AppCompatActivity  {
                         cardText.getViewTreeObserver().removeGlobalOnLayoutListener( this );
 
                         //Move the cards before adding the newly made card to the cardArraylist so that the card doesnt move down
-                        moveCards(temp);
+                        moveCards(temp,temp.getHeight() +80);
 
                         //Add the card to the card Arraylist
                         allCards.add(temp);
@@ -175,12 +186,16 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     //Move the cards down so the new card is above everything else.
-    private void moveCards(CardView newCard)
+    public static void moveCards(CardView newCard, int height)
     {
         //Make every card in the arrayList move
         for (CardView temp : allCards)
         {
-            temp.animate().y(temp.getY()+newCard.getHeight()+80).setDuration(500);
+            if (temp != newCard) {
+                if (temp.getY() >= newCard.getY()) {
+                    temp.animate().y(temp.getY() + height).setDuration(500);
+                }
+            }
         }
         newCard.animate().alpha(1).setDuration(800);
     }
@@ -228,5 +243,15 @@ public class MainActivity extends AppCompatActivity  {
             }
             MainActivity.cardHighlighted = false;
         }
+    }
+
+
+    //If the delete button is clicked, remove the specified card
+    public static void removeCard(CardView cardView){
+        //First move the cards up so that there isnt a gap
+        MainActivity.moveCards(cardView,-cardView.getHeight());
+        //Then delete the specified card
+        MainActivity.layout.removeView(cardView);
+
     }
 }
